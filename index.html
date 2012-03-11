@@ -1,90 +1,70 @@
 <!doctype html>
-<html>
-  <body>
-    <p>A game for Harry.</p>
-    <!-- <p>Your score is <b class="score">0</b> / <b class="taken">0</b>.</p> -->
-    <p>No thought given to browser compatability here, only intending to run this locally really.</p>
-    <video />
-    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-    <script>
-      var questions = [
+<html><head>
+  <title>Keyboard Monkey - a game for Harry</title>
+  <style>
+    video { width: 400px }
+  </style>
+</head><body>
+  <p><strong>Keyboard monkey</strong> - A game for Harry.</p>
+  <!-- <p>Your score is <b class="score">0</b> / <b class="taken">0</b>.</p> -->
+  <p>No thought given to browser compatibility here, only intending to run this locally really.</p>
+  <video />
+  <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+  <script>
+    var questions = [
+      [
+        'what number',
         [
-          'what number',
-          [
-            [
-              'comes before',
-              [
-                [ 1, 0 ], // yes I could have simplified this but I want to ask different kinds of questions later...
-                [ 2, 1 ],
-                [ 3, 2 ],
-                [ 4, 3 ],
-                [ 5, 4 ],
-                [ 6, 5 ],
-                [ 7, 6 ],
-                [ 8, 7 ],
-                [ 9, 8 ],
-                [ 10, 9 ],
-              ]
-            ],
-            [
-              'comes after',
-              [
-                [ 0, 1 ],
-                [ 1, 2 ],
-                [ 2, 3 ],
-                [ 3, 4 ],
-                [ 4, 5 ],
-                [ 5, 6 ],
-                [ 6, 7 ],
-                [ 7, 8 ],
-                [ 8, 9 ] // sticking to single digit answers for now
-              ]
-            ]
-          ]
+          [ 'comes before', [ [ 1, 0 ], [ 2, 1 ], [ 3, 2 ], [ 4, 3 ], [ 5, 4 ], [ 6, 5 ], [ 7, 6 ], [ 8, 7 ], [ 9, 8 ], [ 10, 9 ], ] ], // yes I could have simplified this but I want to ask different kinds of questions later...
+          [ 'comes after', [ [ 0, 1 ], [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ], [ 6, 7 ], [ 7, 8 ], [ 8, 9 ] ] ] // sticking to single digit answers for now
         ]
-      ], $video, i, $score, say = function ( word ) {
-        if ( word instanceof Array ) {
-          var i = 0;
-          return $video.bind( 'ended', function ( ) { // replace with .on( ) and .off( ) ?
-            word[ i ] ? say( word[ i ++ ] ) : $video.unbind( 'ended' );
-          } ).trigger('ended');
+      ]
+    ], $video, i, $score, say = function ( word ) {
+      if ( word instanceof Array ) {
+        var i = 0;
+        return $video.bind( 'ended', function ( ) { // replace with .on( ) and .off( ) ?
+          word[ i ] ? say( word[ i ++ ] ) : $video.unbind( 'ended' );
+        } ).trigger('ended');
+      }
+      var file = word.toString( ).replace( /\W/g, '_' ) + '.m4v';
+      $video[0].src = file;
+      $video[0].load( );
+      $video[0].play( );
+    },
+    ask = function ( question, answer, prefix ) {
+      if ( question === null ) { // get a random question out of the data above
+        var q = Math.floor( Math.random( questions.length ));
+        question = [questions[q][0]];
+        var q2 = Math.floor( Math.random( ) * questions[q][1].length );
+        question.push( questions[q][1][q2][0] );
+        var q3 = Math.floor( Math.random( ) * questions[q][1][q2][1].length );
+        question.push( questions[q][1][q2][1][q3][0] );
+        answer = questions[q][1][q2][1][q3][1];
+      }
+      var copy = question.slice( 0 );
+      prefix && copy.unshift( prefix );
+      say( copy );
+      $(document).keypress( function ( e ) {
+        if ( String.fromCharCode( e.which ) === answer.toString( ).toLowerCase( )) {
+          // $score.text( 1 + $score.text( ) / 1 );
+          ask( null, null, 'correct' );
         }
-        var file = word.toString( ).replace( /\W/g, '_' ) + '.m4v';
-        $video[0].src = file;
-        $video[0].load( );
-        $video[0].play( );
-      },
-      ask = function ( question, answer, prefix ) {
-        if ( question === null ) { // get a random question out of the data above
-          var q = Math.floor( Math.random( questions.length ));
-          question = [questions[q][0]];
-          var q2 = Math.floor( Math.random( ) * questions[q][1].length );
-          question.push( questions[q][1][q2][0] );
-          var q3 = Math.floor( Math.random( ) * questions[q][1][q2][1].length );
-          question.push( questions[q][1][q2][1][q3][0] );
-          answer = questions[q][1][q2][1][q3][1];
+        else {
+          ask( question, answer, 'incorrect' );
         }
-        var copy = question.slice( 0 );
-        prefix && copy.unshift( prefix );
-        say( copy );
-        $(document).keypress( function ( e ) {
-          if ( String.fromCharCode( e.which ) === answer.toString( ).toLowerCase( )) {
-            // $score.text( 1 + $score.text( ) / 1 );
-            ask( null, null, 'correct' );
-          }
-          else {
-            ask( question, answer, 'incorrect' );
-          }
-          // $taken.text( 1 + $taken.text( ) / 1 );
-          // console.log( 'incremented taken, now it is ' + $taken.text( ));
-        } );
-      };
-      $( function ( ) {
-        $video = $('video');
-        $score = $('.score');
-        $taken = $('.taken');
-        ask( null );
+        // $taken.text( 1 + $taken.text( ) / 1 );
+        // console.log( 'incremented taken, now it is ' + $taken.text( ));
       } );
-    </script>
-  </body>
-</html>
+    };
+    $( function ( ) {
+      $video = $('video');
+      console.log( $video );
+      $video.bind( 'timeupdate', function( ) {
+        console.log( this.currentTime );
+      } );
+      // $score = $('.score');
+      // $taken = $('.taken');
+      ask( null );
+    } );
+  </script>
+</body> </html>
