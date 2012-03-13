@@ -6,8 +6,8 @@
   </style>
 </head><body>
   <p><strong>Keyboard monkey</strong> - A game for Harry.</p>
-  <!-- <p>Your score is <b class="score">0</b> / <b class="taken">0</b>.</p> -->
   <p>No thought given to browser compatibility here, only intending to run this locally really.</p>
+  <p>Change this to <a href="https://developers.google.com/youtube/js_api_reference#Queueing_Functions">host the videos on youtube instead</a>?</p>
   <video />
   <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
   <script>
@@ -19,7 +19,7 @@
           [ 'comes after', [ [ 0, 1 ], [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ], [ 6, 7 ], [ 7, 8 ], [ 8, 9 ] ] ] // sticking to single digit answers for now
         ]
       ]
-    ], $video, i, $score, say = function ( word ) {
+    ], $video, i, say = function ( word ) {
       if ( word instanceof Array ) {
         var i = 0;
         return $video.bind( 'ended', function ( ) { // replace with .on( ) and .off( ) ?
@@ -46,24 +46,20 @@
       say( copy );
       $(document).keypress( function ( e ) {
         if ( String.fromCharCode( e.which ) === answer.toString( ).toLowerCase( )) {
-          // $score.text( 1 + $score.text( ) / 1 );
           ask( null, null, 'correct' );
         }
         else {
           ask( question, answer, 'incorrect' );
         }
-        // $taken.text( 1 + $taken.text( ) / 1 );
-        // console.log( 'incremented taken, now it is ' + $taken.text( ));
       } );
     };
+    window.$ || alert( 'Looks like I'm using the jquery cdn and you are not online...' );
     $( function ( ) {
       $video = $('video');
       console.log( $video );
       $video.bind( 'timeupdate', function( ) {
         console.log( this.currentTime );
       } );
-      // $score = $('.score');
-      // $taken = $('.taken');
       ask( null );
     } );
   </script>
