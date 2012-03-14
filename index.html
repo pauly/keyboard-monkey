@@ -48,7 +48,7 @@
       ask: function ( question, answer, prefix ) {
         var my = this;
         if ( question === null ) { // get a random question out of the data above
-          var f = Math.round, r = Math.random, q = f( r( my.qs.length ));
+          var f = Math.floor, r = Math.random, q = f( r( my.qs.length ));
           question = [my.qs[q][0]];
           var q2 = f( r( ) * my.qs[q][1].length );
           question.push( my.qs[q][1][q2][0] );
