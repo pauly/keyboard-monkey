@@ -2,65 +2,84 @@
 <html><head>
   <title>Keyboard Monkey - a game for Harry</title>
   <style>
-    video { width: 400px }
+    .video { width: 480px, height: 300px }
   </style>
 </head><body>
-  <p><strong>Keyboard monkey</strong> - A game for Harry.</p>
-  <p>No thought given to browser compatibility here, only intending to run this locally really.</p>
-  <p>Change this to <a href="https://developers.google.com/youtube/js_api_reference#Queueing_Functions">host the videos on youtube instead</a>?</p>
-  <video />
-  <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+  <p><strong>Keyboard monkey</strong> - A game for Harry. Hit the keyboard to answer the question.</p>
+  <div id="video">Going to do youtube via flash here...</div>
+  <script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
   <script>
-    var questions = [
-      [
-        'what number',
+    var KeyboardMonkey = {
+      video: {
+        'what number': [ 'qM7Q2bgvxJc', '6qd4E12IFk4' ],
+        'comes before': [ 'TlBgMxlsz0E', 'CetlI3TPfLE' ],
+        'comes after': '7ptt2GcM7M4',
+        '0': '0WAyc7uGmIM',
+        '1': 'qcEiH7mmcXU',
+        '2': 'X4SndlpCX4Y',
+        '3': 'hANHRIfn-yc',
+        '4': 'fR_3YGMOEzM',
+        '5': 'Ell5N0arU7c',
+        '6': 'ftr9KDj4IAQ',
+        '7': '0d7X8ErR8sY',
+        '8': 'U8XMvMQU258',
+        '9': 'viyygBymSlg',
+        '10': 'eKhlAkw9swI',
+        'correct': 'HF1sn-5ejsg',
+        'incorrect': 'mOh-u4_0qqk'
+      },
+      qs: [
         [
-          [ 'comes before', [ [ 1, 0 ], [ 2, 1 ], [ 3, 2 ], [ 4, 3 ], [ 5, 4 ], [ 6, 5 ], [ 7, 6 ], [ 8, 7 ], [ 9, 8 ], [ 10, 9 ], ] ], // yes I could have simplified this but I want to ask different kinds of questions later...
-          [ 'comes after', [ [ 0, 1 ], [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ], [ 6, 7 ], [ 7, 8 ], [ 8, 9 ] ] ] // sticking to single digit answers for now
+          'what number',
+          [
+            [ 'comes before', [ [ 1, 0 ], [ 2, 1 ], [ 3, 2 ], [ 4, 3 ], [ 5, 4 ], [ 6, 5 ], [ 7, 6 ], [ 8, 7 ], [ 9, 8 ], [ 10, 9 ], ] ], // yes I could have simplified this but I want to ask different kinds of questions later...
+            [ 'comes after', [ [ 0, 1 ], [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 6 ], [ 6, 7 ], [ 7, 8 ], [ 8, 9 ] ] ] // sticking to single digit answers for now
+          ]
         ]
-      ]
-    ], $video, i, say = function ( word ) {
-      if ( word instanceof Array ) {
-        var i = 0;
-        return $video.bind( 'ended', function ( ) { // replace with .on( ) and .off( ) ?
-          word[ i ] ? say( word[ i ++ ] ) : $video.unbind( 'ended' );
-        } ).trigger('ended');
-      }
-      var file = word.toString( ).replace( /\W/g, '_' ) + '.m4v';
-      $video[0].src = file;
-      $video[0].load( );
-      $video[0].play( );
-    },
-    ask = function ( question, answer, prefix ) {
-      if ( question === null ) { // get a random question out of the data above
-        var q = Math.floor( Math.random( questions.length ));
-        question = [questions[q][0]];
-        var q2 = Math.floor( Math.random( ) * questions[q][1].length );
-        question.push( questions[q][1][q2][0] );
-        var q3 = Math.floor( Math.random( ) * questions[q][1][q2][1].length );
-        question.push( questions[q][1][q2][1][q3][0] );
-        answer = questions[q][1][q2][1][q3][1];
-      }
-      var copy = question.slice( 0 );
-      prefix && copy.unshift( prefix );
-      say( copy );
-      $(document).keypress( function ( e ) {
-        if ( String.fromCharCode( e.which ) === answer.toString( ).toLowerCase( )) {
-          ask( null, null, 'correct' );
+      ],
+      player: null,
+      q: null,
+      a: null,
+      map: function ( fn, a ) {
+        for ( i = 0, l = a.length; i < l; i ++ ) {
+          a[i] = fn(a[i]);
+        }
+      },
+      ask: function ( question, answer, prefix ) {
+        var my = this;
+        if ( question === null ) { // get a random question out of the data above
+          var f = Math.round, r = Math.random, q = f( r( my.qs.length ));
+          question = [my.qs[q][0]];
+          var q2 = f( r( ) * my.qs[q][1].length );
+          question.push( my.qs[q][1][q2][0] );
+          var q3 = f( r( ) * my.qs[q][1][q2][1].length );
+          question.push( my.qs[q][1][q2][1][q3][0] );
+          answer = my.qs[q][1][q2][1][q3][1];
+        }
+        my.q = question;
+        my.a = answer;
+        var copy = question.slice( 0 );
+        prefix && copy.unshift( prefix );
+        my.map( function( x ) { var v = my.video[x]; return ( v instanceof Array ) ? v[ Math.round( Math.random( v.length )) ] : v }, copy );
+        my.player.loadPlaylist( copy );
+      },
+      mark: function ( key ) {
+        if ( String.fromCharCode( key.charCode ) === this.a.toString( ).toLowerCase( )) {
+          this.ask( null, null, 'correct' );
         }
         else {
-          ask( question, answer, 'incorrect' );
+          this.ask( this.q, this.a, 'incorrect' );
         }
-      } );
+      }
     };
-    window.$ || alert( 'Looks like I'm using the jquery cdn and you are not online...' );
-    $( function ( ) {
-      $video = $('video');
-      console.log( $video );
-      $video.bind( 'timeupdate', function( ) {
-        console.log( this.currentTime );
-      } );
-      ask( null );
-    } );
+    var onYouTubePlayerReady = function ( ) {
+      KeyboardMonkey.player = document.getElementById("ytPlayer");
+      KeyboardMonkey.ask( null );
+    };
+    // All of the magic handled by SWFObject (http://code.google.com/p/swfobject/)
+    swfobject.embedSWF( "http://www.youtube.com/apiplayer?enablejsapi=1&version=3", "video", "480", "295", "9", null, null, { allowScriptAccess: "always" }, { id: "ytPlayer" } );
+    document.onkeypress = function ( e ) {
+      KeyboardMonkey.mark( e );
+    };
   </script>
-</body> </html>
+</body></html>
