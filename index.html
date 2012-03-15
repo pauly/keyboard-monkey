@@ -1,12 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html><head>
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.css" />
+  <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>
+  <meta name="viewport" content="width=device-width,user-scalable=no" />
   <title>Keyboard Monkey - a game for Harry</title>
   <style>
     .video { width: 480px, height: 300px }
   </style>
-</head><body>
-  <p><strong>Keyboard monkey</strong> - A game for Harry. Hit the keyboard to answer the question.</p>
-  <div id="video">Going to do youtube via flash here...</div>
+</head>
+<body>
+  <div data-role="page">
+    <div data-role="header">
+      <h1>Keyboard monkey</h1>
+    </div>
+    <div data-role="content">
+      <p>A game for Harry. Hit the keyboard to answer the question.</p>
+      <p><a href="#page2">Let's play</a>...</p>
+    </div>
+    <div data-role="footer">
+      <h4>By <a href="http://www.clarkeology.com/blog/">Paul Clarke</a>.</h4>
+    </div>
+  </div>
+  <div data-role="page" id="page2" data-add-back-btn="true">
+    <div data-role="header">
+      <h1>Keyboard monkey</h1>
+    </div>
+    <div data-role="content">
+      <div id="video">Going to do youtube via flash here...</div>
+    </div>
+    <div data-role="footer">
+      <h4>By <a href="http://www.clarkeology.com/blog/">Paul Clarke</a>.</h4>
+    </div>
+  </div>
   <script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
   <script>
     var KeyboardMonkey = {
