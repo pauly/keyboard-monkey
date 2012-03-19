@@ -5,6 +5,8 @@
   <script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>
   <meta name="viewport" content="width=device-width,user-scalable=no" />
   <title>Key Monkey - a game for Harry</title>
+  <style>#video { height: 240px; width: 360px; }</style>
+  <style>video { position: absolute; }</style>
 </head>
 <body>
   <div data-role="page">
@@ -25,7 +27,7 @@
     </div>
     <div data-role="content">
       <div id="video"><p>Video goes here...</p></div>
-      <div><input id="answer" /></div>
+      <div><input type="number" id="answer" /></div>
     </div>
     <div data-role="footer">
       <h4>By <a href="http://www.clarkeology.com/blog/">Paul Clarke</a>.</h4>
@@ -49,9 +51,10 @@
         $video = $('#video').empty( );
         for ( i = 0, l = word.length; i < l; i ++ ) {
           file = word[i].toString( ).replace( /\W/g, '_' ) + '.m4v';
-          $('<video src="' + file + '">').css( { "z-index": 10 - i } ).appendTo($video).bind( 'ended', function ( ) {
+          $('<video autobuffer height="240" width="360"><source src="' + file + '" /><source src="' + file + '.webm" type="video/webm"><source src="' + file + '.theora.ogv" type="video/ogg"></video>').css( { "z-index": 10 - i } ).appendTo($video).bind( 'ended', function ( ) {
             var n = $(this).next('video')[0];
             n && $(this).fadeOut( ).remove( ) && n.play( ); // so why no fade?
+            n || $('input').val('').focus( );
           } )[0].load( );
         }
         $('video')[0].play( );
