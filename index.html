@@ -4,15 +4,12 @@
   <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
   <script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>
   <meta name="viewport" content="width=device-width,user-scalable=no" />
-  <title>Keyboard Monkey - a game for Harry</title>
-  <style>
-    .video { width: 480px, height: 300px }
-  </style>
+  <title>Key Monkey - a game for Harry</title>
 </head>
 <body>
   <div data-role="page">
     <div data-role="header">
-      <h1>Keyboard monkey</h1>
+      <h1>Key monkey</h1>
     </div>
     <div data-role="content">
       <p>A game for Harry. Hit the keyboard to answer the question.</p>
@@ -24,10 +21,11 @@
   </div>
   <div data-role="page" id="page2" data-add-back-btn="true">
     <div data-role="header">
-      <h1>Keyboard monkey</h1>
+      <h1>Key monkey <span id="score">0</span>/<span id="taken">0</span></h1>
     </div>
     <div data-role="content">
-      <div id="video">Going to do youtube via flash here...</div>
+      <div id="video"><p>Video goes here...</p></div>
+      <div><input id="answer" /></div>
     </div>
     <div data-role="footer">
       <h4>By <a href="http://www.clarkeology.com/blog/">Paul Clarke</a>.</h4>
@@ -35,25 +33,7 @@
   </div>
   <script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
   <script>
-    var KeyboardMonkey = {
-      video: {
-        'what number': [ 'qM7Q2bgvxJc', '6qd4E12IFk4' ],
-        'comes before': [ 'TlBgMxlsz0E', 'CetlI3TPfLE' ],
-        'comes after': '7ptt2GcM7M4',
-        '0': '0WAyc7uGmIM',
-        '1': 'qcEiH7mmcXU',
-        '2': 'X4SndlpCX4Y',
-        '3': 'hANHRIfn-yc',
-        '4': 'fR_3YGMOEzM',
-        '5': 'Ell5N0arU7c',
-        '6': 'ftr9KDj4IAQ',
-        '7': '0d7X8ErR8sY',
-        '8': 'U8XMvMQU258',
-        '9': 'viyygBymSlg',
-        '10': 'eKhlAkw9swI',
-        'correct': 'HF1sn-5ejsg',
-        'incorrect': 'mOh-u4_0qqk'
-      },
+    var KeyMonkey = {
       qs: [
         [
           'what number',
@@ -63,13 +43,18 @@
           ]
         ]
       ],
-      player: null,
       q: null,
       a: null,
-      map: function ( fn, a ) {
-        for ( i = 0, l = a.length; i < l; i ++ ) {
-          a[i] = fn(a[i]);
+      say: function ( word ) {
+        $video = $('#video').empty( );
+        for ( i = 0, l = word.length; i < l; i ++ ) {
+          file = word[i].toString( ).replace( /\W/g, '_' ) + '.m4v';
+          $('<video src="' + file + '">').css( { "z-index": 10 - i } ).appendTo($video).bind( 'ended', function ( ) {
+            var n = $(this).next('video')[0];
+            n && $(this).fadeOut( ).remove( ) && n.play( ); // so why no fade?
+          } )[0].load( );
         }
+        $('video')[0].play( );
       },
       ask: function ( question, answer, prefix ) {
         var my = this;
@@ -86,26 +71,25 @@
         my.a = answer;
         var copy = question.slice( 0 );
         prefix && copy.unshift( prefix );
-        my.map( function( x ) { var v = my.video[x]; return ( v instanceof Array ) ? v[ Math.round( Math.random( v.length )) ] : v }, copy );
-        my.player.loadPlaylist( copy );
+        my.say( copy );
+      },
+      increment: function ( id ) {
+        $('#' + id).text( 1 + $('#' + id).text( ) / 1 );
       },
       mark: function ( key ) {
         if ( String.fromCharCode( key.charCode ) === this.a.toString( ).toLowerCase( )) {
+          this.increment( 'score' );
           this.ask( null, null, 'correct' );
         }
         else {
           this.ask( this.q, this.a, 'incorrect' );
         }
+        this.increment( 'taken' );
       }
     };
-    var onYouTubePlayerReady = function ( ) {
-      KeyboardMonkey.player = document.getElementById("ytPlayer");
-      KeyboardMonkey.ask( null );
-    };
-    // All of the magic handled by SWFObject (http://code.google.com/p/swfobject/)
-    swfobject.embedSWF( "http://www.youtube.com/apiplayer?enablejsapi=1&version=3", "video", "480", "295", "9", null, null, { allowScriptAccess: "always" }, { id: "ytPlayer" } );
     document.onkeypress = function ( e ) {
-      KeyboardMonkey.mark( e );
+      KeyMonkey.mark( e );
     };
+    KeyMonkey.ask( null );
   </script>
 </body></html>
