@@ -33,7 +33,6 @@
       <h4>By <a href="http://www.clarkeology.com/blog/">Paul Clarke</a>.</h4>
     </div>
   </div>
-  <script src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
   <script>
     var KeyMonkey = {
       qs: [
@@ -50,8 +49,8 @@
       say: function ( word ) {
         $video = $('#video').empty( );
         for ( i = 0, l = word.length; i < l; i ++ ) {
-          file = word[i].toString( ).replace( /\W/g, '_' ) + '.m4v';
-          $('<video autobuffer height="240" width="360"><source src="' + file + '" /><source src="' + file + '.webm" type="video/webm"><source src="' + file + '.theora.ogv" type="video/ogg"></video>').css( { "z-index": 10 - i } ).appendTo($video).bind( 'ended', function ( ) {
+          file = word[i].toString( ).replace( /\W/g, '_' );
+          $('<video autobuffer height="240" width="360"><source src="' + file + '.m4v" /><source src="' + file + '.webm" type="video/webm"><source src="' + file + '.theora.ogv" type="video/ogg"></video>').css( { "z-index": 10 - i } ).appendTo($video).bind( 'ended', function ( ) {
             var n = $(this).next('video')[0];
             n && $(this).fadeOut( ).remove( ) && n.play( ); // so why no fade?
             n || $('input').val('').focus( );
