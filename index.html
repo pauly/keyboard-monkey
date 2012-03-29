@@ -47,13 +47,13 @@
       q: null,
       a: null,
       say: function ( word ) {
-        $video = $('#video').empty( );
+        var $video = $('#video').empty( ), $input = $('input').val('').blur( );
         for ( i = 0, l = word.length; i < l; i ++ ) {
           file = word[i].toString( ).replace( /\W/g, '_' );
           $('<video autobuffer height="240" width="360"><source src="' + file + '.m4v" /><source src="' + file + '.webm" type="video/webm"><source src="' + file + '.theora.ogv" type="video/ogg"></video>').css( { "z-index": 10 - i } ).appendTo($video).bind( 'ended', function ( ) {
             var n = $(this).next('video')[0];
             n && $(this).fadeOut( ).remove( ) && n.play( ); // so why no fade?
-            n || $('input').val('').focus( );
+            n || $input.focus( );
           } )[0].load( );
         }
         $('video')[0].play( );
